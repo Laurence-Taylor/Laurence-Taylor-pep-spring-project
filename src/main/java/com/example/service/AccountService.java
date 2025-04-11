@@ -10,6 +10,7 @@ import com.example.entity.Account;
 import com.example.exception.AccountHandleExceptions;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -34,6 +35,15 @@ public class AccountService {
             throw new AccountHandleExceptions("Password must be longer than 4 characters. Please try again.");
         }
         return null;
+    }
+
+    public Account login(String userName, String password){
+        Optional<Account> loginAccount =accountRepository.findByUsernameAndPassword(userName, password);
+        if(loginAccount.isPresent()){
+            return loginAccount.get();
+        }else{
+            return null;
+        }
     }
 
 }
