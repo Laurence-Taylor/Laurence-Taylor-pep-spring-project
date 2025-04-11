@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,7 +60,6 @@ public class SocialMediaController {
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-
     }
 
     @PostMapping("login")
@@ -104,8 +104,14 @@ public class SocialMediaController {
     }
 
     @PatchMapping("messages/{messageId}")
-    public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId){
-        
+    public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody String messageText){
+        Boolean existMessage = messageRepository.existsById(messageId);
+        if(messageRepository.existsById(messageId)){
+            messageService.updateMessage(messageId, messageText);
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @GetMapping("accounts/{accountId}/messages")
