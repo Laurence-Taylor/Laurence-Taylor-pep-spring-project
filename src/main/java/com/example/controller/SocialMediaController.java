@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -103,19 +106,18 @@ public class SocialMediaController {
         }
     }
 
+    @GetMapping("accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> retrieveAllMessagesForUser(@PathVariable Integer accountId){
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveAllMessageForUser(accountId));
+    }
+
     @PatchMapping("messages/{messageId}")
-    public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody String messageText){
-        Boolean existMessage = messageRepository.existsById(messageId);
-        if(messageRepository.existsById(messageId)){
-            messageService.updateMessage(messageId, messageText);
+    public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody Message messageText){
+
+        if(messageRepository.existsById(messageId) && (messageService.updateMessage(messageId, messageText))){
             return ResponseEntity.status(HttpStatus.OK).body(1);
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-    }
-
-    @GetMapping("accounts/{accountId}/messages")
-    public ResponseEntity<List<Message>> retrieveAllMessagesForUser(@PathVariable Integer accountId){
-        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveAllMessageForUser(accountId));
     }
 }

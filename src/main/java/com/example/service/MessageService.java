@@ -56,15 +56,14 @@ public class MessageService {
         messageRepository.deleteById(messageId);
     }
 
-    public void updateMessage(Integer messageId, String messageTex) throws MessageHandleExceptions{
-        if ((messageTex != "") && (messageTex.length()<=255)){
+    public Boolean updateMessage(Integer messageId, Message messageTex) throws MessageHandleExceptions{
+        if ((messageTex.getMessageText() != "") && (messageTex.getMessageText().length() < 255)){
             Message messageToUpdate = messageRepository.findById(messageId).orElseThrow();
-            messageToUpdate.setMessageText(messageTex);
+            messageToUpdate.setMessageText(messageTex.getMessageText());
             messageRepository.save(messageToUpdate);
-        }else if(messageTex == ""){
-            throw new MessageHandleExceptions("The message text cannot be empty. Please try again.");
-        }else if((messageTex.length()>255)){
-            throw new MessageHandleExceptions("The message text cannot be longer than 255 characters. Please try again.");
+            return true;
+        }else{
+            return false;
         }
     }
 
