@@ -11,4 +11,6 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message,Integer> {
 
     List<Message> findByPostedByAndMessageTextAndTimePostedEpoch(Integer postedBy, String messageText, Long timePostedEpoch);
+
+    List<Message> findByPostedBy(Integer postedBy);
 }

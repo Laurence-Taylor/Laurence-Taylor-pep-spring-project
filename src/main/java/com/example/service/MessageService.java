@@ -51,4 +51,16 @@ public class MessageService {
         }
     }
 
+
+    public void deleteMessageByMessageId(Integer messageId){
+        messageRepository.deleteById(messageId);
+    }
+
+    public void updateMessage(Integer messageId){
+
+    }
+
+    public List<Message> retrieveAllMessageForUser(Integer accountId){
+        return messageRepository.findByPostedBy(accountId);
+        }
 }

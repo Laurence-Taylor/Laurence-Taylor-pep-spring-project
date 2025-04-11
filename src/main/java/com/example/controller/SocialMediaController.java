@@ -3,7 +3,9 @@ package com.example.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +18,10 @@ import com.example.service.MessageService;
 import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.repository.AccountRepository;
+import com.example.repository.MessageRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -33,12 +37,14 @@ public class SocialMediaController {
     private AccountService accountService;
     private AccountRepository accountRepository;
     private MessageService messageService;
+    private MessageRepository messageRepository;
 
     @Autowired
-    public SocialMediaController(AccountService accountService, AccountRepository accountRepository, MessageService messageService){
+    public SocialMediaController(AccountService accountService, AccountRepository accountRepository, MessageService messageService, MessageRepository messageRepository){
         this.accountService = accountService;
         this.accountRepository = accountRepository;
         this.messageService = messageService;
+        this.messageRepository = messageRepository;
     }
 
     @PostMapping("register")
@@ -82,10 +88,28 @@ public class SocialMediaController {
     }
 
     @GetMapping("messages/{messageId}")
-    public ResponseEntity <Message> retrieveMEssageByMessageId(@PathVariable int messageId){
+    public ResponseEntity <Message> retrieveMessageByMessageId(@PathVariable int messageId){
         return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveMessageById(messageId));
     }
 
-    
+    @DeleteMapping("messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessageByMessageId(@PathVariable Integer messageId){
+        Optional<Message> listMessage = messageRepository.findById(messageId);
+        if(listMessage.isPresent()){
+            messageService.deleteMessageByMessageId(messageId);
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }else{
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        }
+    }
 
+    @PatchMapping("messages/{messageId}")
+    public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId){
+        
+    }
+
+    @GetMapping("accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> retrieveAllMessagesForUser(@PathVariable Integer accountId){
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveAllMessageForUser(accountId));
+    }
 }
