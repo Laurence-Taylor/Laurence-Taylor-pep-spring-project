@@ -26,7 +26,8 @@ public class MessageService {
         this.accountRepository = accountRepository;
     }
 
-    public Message createMessage(Message newMessage) throws MessageHandleExceptions{
+    // Create a New Message
+    public Message createMessage(Message newMessage){
         if ((newMessage.getMessageText()!="")&&
         (newMessage.getMessageText().length()<=255) &&
         accountRepository.existsById(newMessage.getPostedBy())){
@@ -40,9 +41,11 @@ public class MessageService {
         return null;
     }
 
+    // Returns all Messages
     public List<Message> retrieveAllMessage(){return (List<Message>) messageRepository.findAll();}
-        
-    public Message retrieveMessageById(Integer messageId){
+    
+    // Returns a message given its message identifier.
+    public Message retrieveMessageByMessageId(Integer messageId){
         Optional<Message> messageToReturn = messageRepository.findById(messageId);
         if(messageToReturn.isPresent()){
             return messageToReturn.get();
@@ -51,14 +54,16 @@ public class MessageService {
         }
     }
 
-
+    // Deletes a message given its message identifier.
     public void deleteMessageByMessageId(Integer messageId){
         messageRepository.deleteById(messageId);
     }
 
+    // Update Message
     public Boolean updateMessage(Integer messageId, Message messageTex) throws MessageHandleExceptions{
         if ((messageTex.getMessageText() != "") && (messageTex.getMessageText().length() < 255)){
-            Message messageToUpdate = messageRepository.findById(messageId).orElseThrow();
+            Message messageToUpdate = messageRepository.findById(messageId)
+                                    .orElseThrow(()->new MessageHandleExceptions(messageId + " was not found. Please Check another MessageId."));
             messageToUpdate.setMessageText(messageTex.getMessageText());
             messageRepository.save(messageToUpdate);
             return true;
@@ -67,6 +72,7 @@ public class MessageService {
         }
     }
 
+    // Retrieve all message from a User
     public List<Message> retrieveAllMessageForUser(Integer accountId){
         return messageRepository.findByPostedBy(accountId);
         }

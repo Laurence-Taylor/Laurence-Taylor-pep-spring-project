@@ -92,7 +92,7 @@ public class SocialMediaController {
 
     @GetMapping("messages/{messageId}")
     public ResponseEntity <Message> retrieveMessageByMessageId(@PathVariable int messageId){
-        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveMessageById(messageId));
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveMessageByMessageId(messageId));
     }
 
     @DeleteMapping("messages/{messageId}")
