@@ -23,6 +23,7 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
+    // Process new User Registrations
     public Account register(Account newAccount) throws AccountHandleExceptions{
         if ((newAccount.getUsername()!="")&&
         (newAccount.getPassword().length()>4)){
@@ -37,6 +38,7 @@ public class AccountService {
         return null;
     }
 
+    // Process User Logins
     public Account login(String userName, String password){
         Optional<Account> loginAccount =accountRepository.findByUsernameAndPassword(userName, password);
         if(loginAccount.isPresent()){

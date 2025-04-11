@@ -8,13 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.service.AccountService;
@@ -51,6 +46,7 @@ public class SocialMediaController {
         this.messageRepository = messageRepository;
     }
 
+    // Process New User Registration...
     @PostMapping("register")
     public ResponseEntity<Account> userRegistration(@RequestBody Account newAccount){
         List<Account> listAccount = accountRepository.findByUsername(newAccount.getUsername());
@@ -65,6 +61,7 @@ public class SocialMediaController {
         }
     }
 
+    //Process User Logins 
     @PostMapping("login")
     public ResponseEntity<Account> userLogin(@RequestBody Account account){
         Account loginAccount = accountService.login(account.getUsername(), account.getPassword());
@@ -75,6 +72,7 @@ public class SocialMediaController {
         }
     }
 
+    // Process the creation of new Messages
     @PostMapping("messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message newMessage){
         Message createdMessage = messageService.createMessage(newMessage);
@@ -85,16 +83,19 @@ public class SocialMediaController {
         }
     }
 
+    // Process retrieve all Messages 
     @GetMapping("messages")
     public ResponseEntity <List<Message>> retrieveAllMessage(){ 
         return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveAllMessage());
     }
 
+    // Process retrieve a Message given its ID. 
     @GetMapping("messages/{messageId}")
     public ResponseEntity <Message> retrieveMessageByMessageId(@PathVariable int messageId){
         return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveMessageByMessageId(messageId));
     }
 
+    // Process Delete a message given its ID
     @DeleteMapping("messages/{messageId}")
     public ResponseEntity<Integer> deleteMessageByMessageId(@PathVariable Integer messageId){
         Optional<Message> listMessage = messageRepository.findById(messageId);
@@ -106,11 +107,7 @@ public class SocialMediaController {
         }
     }
 
-    @GetMapping("accounts/{accountId}/messages")
-    public ResponseEntity<List<Message>> retrieveAllMessagesForUser(@PathVariable Integer accountId){
-        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveAllMessageForUser(accountId));
-    }
-
+    // Update a Message Text identified by a message ID
     @PatchMapping("messages/{messageId}")
     public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody Message messageText){
 
@@ -119,5 +116,11 @@ public class SocialMediaController {
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+        
+    // Retrieve all message written by a Particular User.
+    @GetMapping("accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> retrieveAllMessagesForUser(@PathVariable Integer accountId){
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveAllMessageForUser(accountId));
     }
 }

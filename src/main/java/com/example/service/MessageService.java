@@ -45,7 +45,7 @@ public class MessageService {
     public List<Message> retrieveAllMessage(){return (List<Message>) messageRepository.findAll();}
     
     // Returns a message given its message identifier.
-    public Message retrieveMessageByMessageId(Integer messageId){
+    public Message retrieveMessageByMessageId(Integer messageId) {
         Optional<Message> messageToReturn = messageRepository.findById(messageId);
         if(messageToReturn.isPresent()){
             return messageToReturn.get();
