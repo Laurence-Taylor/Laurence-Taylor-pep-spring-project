@@ -3,13 +3,18 @@ package com.example.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.service.AccountService;
+import com.example.service.MessageService;
 import com.example.entity.Account;
+import com.example.entity.Message;
 import com.example.repository.AccountRepository;
 
 import java.util.List;
@@ -27,15 +32,17 @@ public class SocialMediaController {
 
     private AccountService accountService;
     private AccountRepository accountRepository;
+    private MessageService messageService;
 
     @Autowired
-    public SocialMediaController(AccountService accountService, AccountRepository accountRepository){
+    public SocialMediaController(AccountService accountService, AccountRepository accountRepository, MessageService messageService){
         this.accountService = accountService;
         this.accountRepository = accountRepository;
+        this.messageService = messageService;
     }
 
     @PostMapping("register")
-    public ResponseEntity<Account> register(@RequestBody Account newAccount){
+    public ResponseEntity<Account> userRegistration(@RequestBody Account newAccount){
         List<Account> listAccount = accountRepository.findByUsername(newAccount.getUsername());
         if(!listAccount.isEmpty()){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
@@ -50,7 +57,7 @@ public class SocialMediaController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<Account> login(@RequestBody Account account){
+    public ResponseEntity<Account> userLogin(@RequestBody Account account){
         Account loginAccount = accountService.login(account.getUsername(), account.getPassword());
         if (loginAccount!= null){
             return ResponseEntity.status(HttpStatus.OK).body(loginAccount);
@@ -59,6 +66,26 @@ public class SocialMediaController {
         }
     }
 
+    @PostMapping("messages")
+    public ResponseEntity<Message> createMessage(@RequestBody Message newMessage){
+        Message createdMessage = messageService.createMessage(newMessage);
+        if (createdMessage!= null){
+            return ResponseEntity.status(HttpStatus.OK).body(createdMessage);
+        }else{
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("messages")
+    public ResponseEntity <List<Message>> retrieveAllMessage(){ 
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveAllMessage());
+    }
+
+    @GetMapping("messages/{messageId}")
+    public ResponseEntity <Message> retrieveMEssageByMessageId(@PathVariable int messageId){
+        return ResponseEntity.status(HttpStatus.OK).body(messageService.retrieveMessageById(messageId));
+    }
 
     
+
 }
