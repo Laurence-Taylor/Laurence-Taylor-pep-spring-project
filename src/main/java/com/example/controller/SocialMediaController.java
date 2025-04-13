@@ -33,10 +33,10 @@ import java.util.Optional;
  @RequestMapping
 public class SocialMediaController {
 
-    private AccountService accountService;
-    private AccountRepository accountRepository;
-    private MessageService messageService;
-    private MessageRepository messageRepository;
+    private final AccountService accountService;
+    private final AccountRepository accountRepository;
+    private final MessageService messageService;
+    private final MessageRepository messageRepository;
 
     @Autowired
     public SocialMediaController(AccountService accountService, AccountRepository accountRepository, MessageService messageService, MessageRepository messageRepository){
