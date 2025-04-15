@@ -55,15 +55,25 @@ public class MessageService {
     }
 
     // Deletes a message given its message identifier.
-    public void deleteMessageByMessageId(Integer messageId){
-        messageRepository.deleteById(messageId);
+    public Boolean deleteMessageByMessageId(Integer messageId){
+        Optional<Message> optionalMessage = messageRepository.findById(messageId);
+        if(optionalMessage.isPresent()){
+            messageRepository.deleteById(messageId);
+            return true;
+        }else{
+            return false;
+        }
+        
     }
 
     // Update Message
     public Boolean updateMessage(Integer messageId, Message messageTex) throws MessageHandleExceptions{
-        if ((messageTex.getMessageText() != "") && (messageTex.getMessageText().length() < 255)){
+        Optional<Message> optionalMessage = messageRepository.findById(messageId);
+        if ((messageTex.getMessageText() != "") && 
+        (messageTex.getMessageText().length() < 255) &&
+        (optionalMessage.isPresent())){
             Message messageToUpdate = messageRepository.findById(messageId)
-                                    .orElseThrow(()->new MessageHandleExceptions(messageId + " was not found. Please Check another MessageId."));
+                                    .orElseThrow();
             messageToUpdate.setMessageText(messageTex.getMessageText());
             messageRepository.save(messageToUpdate);
             return true;

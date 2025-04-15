@@ -34,30 +34,34 @@ import java.util.Optional;
 public class SocialMediaController {
 
     private final AccountService accountService;
-    private final AccountRepository accountRepository;
     private final MessageService messageService;
-    private final MessageRepository messageRepository;
+
+    public static Boolean existUser;
 
     @Autowired
-    public SocialMediaController(AccountService accountService, AccountRepository accountRepository, MessageService messageService, MessageRepository messageRepository){
+    public SocialMediaController(AccountService accountService, MessageService messageService){
         this.accountService = accountService;
-        this.accountRepository = accountRepository;
         this.messageService = messageService;
-        this.messageRepository = messageRepository;
     }
 
     // Process New User Registration...
     @PostMapping("register")
     public ResponseEntity<Account> userRegistration(@RequestBody Account newAccount){
-        List<Account> listAccount = accountRepository.findByUsername(newAccount.getUsername());
-        if(!listAccount.isEmpty()){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
+        existUser = false;
         Account createdAccount = accountService.register(newAccount);
+        if(existUser){
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(null);
+        }
         if(createdAccount!=null){
-            return ResponseEntity.status(HttpStatus.OK).body(createdAccount);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(createdAccount);
         }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(null);
         }
     }
 
@@ -98,9 +102,7 @@ public class SocialMediaController {
     // Process Delete a message given its ID
     @DeleteMapping("messages/{messageId}")
     public ResponseEntity<Integer> deleteMessageByMessageId(@PathVariable Integer messageId){
-        Optional<Message> listMessage = messageRepository.findById(messageId);
-        if(listMessage.isPresent()){
-            messageService.deleteMessageByMessageId(messageId);
+        if(messageService.deleteMessageByMessageId(messageId)){
             return ResponseEntity.status(HttpStatus.OK).body(1);
         }else{
             return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -111,7 +113,7 @@ public class SocialMediaController {
     @PatchMapping("messages/{messageId}")
     public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody Message messageText){
 
-        if(messageRepository.existsById(messageId) && (messageService.updateMessage(messageId, messageText))){
+        if((messageService.updateMessage(messageId, messageText))){
             return ResponseEntity.status(HttpStatus.OK).body(1);
         }else{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

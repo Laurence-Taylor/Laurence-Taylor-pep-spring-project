@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.repository.AccountRepository;
+import com.example.controller.SocialMediaController;
 import com.example.entity.Account;
 import com.example.exception.AccountHandleExceptions;
 
@@ -25,15 +26,17 @@ public class AccountService {
 
     // Process new User Registrations
     public Account register(Account newAccount) throws AccountHandleExceptions{
+        List<Account> listAccount = accountRepository.findByUsername(newAccount.getUsername());
+        if(!listAccount.isEmpty()){
+            SocialMediaController.existUser = true;
+            return null;
+        }
+
         if ((newAccount.getUsername()!="")&&
         (newAccount.getPassword().length()>4)){
             accountRepository.save(newAccount);
-            List<Account> listAccount = accountRepository.findByUsername(newAccount.getUsername());
+            listAccount = accountRepository.findByUsername(newAccount.getUsername());
             return listAccount.get(0);
-        }else if(newAccount.getUsername()==""){
-            throw new AccountHandleExceptions("The Username field must not be empty. Please try again.");
-        }else if(newAccount.getPassword().length()<=4){
-            throw new AccountHandleExceptions("Password must be longer than 4 characters. Please try again.");
         }
         return null;
     }
